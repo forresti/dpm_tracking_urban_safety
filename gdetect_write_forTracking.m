@@ -1,8 +1,5 @@
-function [bs, count, root_filters] = gdetect_write(pyra, model, bs, trees, from_pos, ...
+function [bs, count, root_filters] = gdetect_write_forTracking(pyra, model, bs, trees, from_pos, ...
                                      dataid, maxsize, maxnum)
-% Write detections from gdetect.m to the feature vector cache.
-%   [bs, count, root_filters] = gdetect_write(pyra, model, bs, trees, from_pos, ...
-%                               dataid, maxsize, maxnum)
 %
 % Return values
 %   bs

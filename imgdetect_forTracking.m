@@ -1,4 +1,4 @@
-function [ds, bs, trees, root_filters] = imgdetect_forrest(im, model, thresh)
+function [ds, bs, trees, root_filters] = imgdetect_forTracking(im, model, thresh)
 % Wrapper around gdetect.m that computes detections in an image.
 %   [ds, bs, trees, root_filters] = imgdetect(im, model, thresh)
 %
@@ -14,20 +14,9 @@ im = color(im);
 pyra = featpyramid(im, model);
 [ds, bs, trees] = gdetect(pyra, model, thresh);
 
-%write detected features (and related stuff) to file
 from_pos = true;
-dataid = 0; %not sure what this does
-
-
-%from train.m -- trying to figure out how this fits into doing multiple calls to gdetect_write 
-%[im, boxes] = croppos(im, pos(j).boxes);
-%[pyra, model_dp] = gdetect_pos_prepare(im, model, boxes, fg_overlap);
-%data(k).pyra = pyra;
-%[ds, bs, trees] = gdetect_pos(data(k).pyra, model_dp, 1+num_fp, ...
-%                               fg_box, fg_overlap, bg_boxes, 0.5);
-%data(k).boxdata{b}.bs = bs;
-%data(k).boxdata{b}.trees = trees;
+dataid = 0; %not sure what this does -Forrest
 
 %note: in the following, bboxes (bs) is unchanged from the bs produced by gdetect
-[bs, count, root_filters] = gdetect_write_forrest(pyra, model, bs, trees, from_pos, dataid); %get root filter feature extractions
+[bs, count, root_filters] = gdetect_write_forTracking(pyra, model, bs, trees, from_pos, dataid); %get root filter feature extractions
 
