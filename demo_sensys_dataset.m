@@ -1,13 +1,12 @@
 % @return detection info, indexed as detectionDetails(img, detectionID)
 function detectionDetails = demo_sensys_dataset()
-    load('cachedir/forrest_models_car_with_nighttime_bg/2007/car_final.mat');
-    %load('cachedir/forrest_models/2007/car_forrest_final.mat'); %voc-release5 model trained on Sensys data
+    load('sensys_models/car_final.mat');
     inputDir = './Dir_2_Lane_3_285';
     outputDir = [inputDir '_detections'];
     unix(['mkdir -p ' outputDir]); %create directory if it doesn't already exist
 
     files = dir([inputDir '/*.jpg']);
-    %files = files(1:5:length(files)); %skip all but 1 out of every 5 images
+    files = files(1:5:length(files)); %skip all but 1 out of every 5 images
     detectionDetails = [];
     img_id = 1;
     for img = files'
@@ -16,17 +15,16 @@ function detectionDetails = demo_sensys_dataset()
         [pathstr, name, ext] = fileparts(inImgName);
 
         im = imread(inImgName);
-        %[dets, boxes] = imgdetect(im, model, -0.3); 
-        %[dets, boxes] = imgdetect(im, model, model.thresh); %using the internal threshold learned in model training
-        [dets, boxes, trees, root_filters] = imgdetect_forrest(im, model, model.thresh);
+        %note: can tune model.thresh to vary precision/recall tradeoff
+        [dets, boxes, trees, root_filters] = imgdetect_forTracking(im, model, model.thresh);
 
-        nms_thresh = 0.3;
+        nms_thresh = 0.3; %for neighboring detections, this is the max allowed bounding box percent overlap (for non-maximal suppression)
         outputDir_nms_thresh = [outputDir '_nms_' num2str(nms_thresh)];
         unix(['mkdir -p ' outputDir_nms_thresh]); %create directory if it doesn't already exist
         outImgName =  [outputDir_nms_thresh '/' img.name];
         outCsvName = [outputDir_nms_thresh '/' name '.csv'];
 
-        current_detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_filters, im, img_id, img.name, outImgName, outCsvName, model); %FIXME: my storage of detectionDetails isn't currently set up to handle experiments with several nms values
+        current_detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_filters, im, img_id, img.name, outImgName, outCsvName, model); 
         detectionDetails = [detectionDetails current_detectionDetails] 
         save('detectionDetails.mat', 'detectionDetails');
         img_id = img_id + 1;
