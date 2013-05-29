@@ -14,7 +14,7 @@ function detectionDetails = demo_sensys_dataset()
     unix(['mkdir -p ' outputDir]); %create directory if it doesn't already exist
 
     files = dir([inputDir '/*.jpg']);
-    files = files(1:5:length(files)); %skip all but 1 out of every 5 images
+    %files = files(1:5:length(files)); %skip all but 1 out of every 5 images
     detectionDetails = [];
     img_id = 1;
     for img = files'
@@ -41,7 +41,7 @@ end
 % write to file: bounding boxes in CSV format and images with bboxes displayed
 function detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_filters, im, img_id, img_name, outImgName, outCsvName, model)
     detectionDetails = [];
-    %try % do nonmax suppression and display detected objects
+    try % do nonmax suppression and display detected objects
         top = nms(dets, nms_thresh); %nonmax suppression (precision vs recall tradeoff)
         theBoxes = reduceboxes(model, boxes);
         rootBoxes = int32(theBoxes(:, 1:4)); %bounding box for whole objects -- ignore part filters. (1:4 is x1 y1 x2 y2 for root box)
@@ -57,11 +57,11 @@ function detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_fi
         csvwrite(outCsvName, rootBoxes);
         showboxes_forTracking(im, rootBoxes); %doesn't need for the image to already be displayed.
         print(gcf, '-djpeg90', '-r0', outImgName);
-    %catch %no detections above nms threshold
-    %    display('no detections')
-    %    image(im);
-    %    print(gcf, '-djpeg90', '-r0', outImgName);
-    %end
+    catch %no detections above nms threshold
+        display('no detections')
+        image(im);
+        print(gcf, '-djpeg90', '-r0', outImgName);
+    end
 end
 
 %get HOG descriptor for a specific DPM model component
