@@ -13,6 +13,7 @@ if isempty(G_STARTUP)
           'model', 'features', 'vis', ...
           'data', 'train', 'test', ...
           'external', 'star-cascade'};
+  addpath(['voc-release5'])
   for i = 1:length(incl)
     addpath(genpath(['voc-release5/' incl{i}]));
   end

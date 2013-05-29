@@ -1,7 +1,7 @@
 % Prepares your matlab workspace for using voc-release5.
 global G_STARTUP;
 
-if isempty(G_STARTUP)
+%if isempty(G_STARTUP)
   G_STARTUP = true;
 
   % Avoiding addpath(genpath('.')) because .git includes
@@ -19,4 +19,4 @@ if isempty(G_STARTUP)
   conf = voc_config();
   fprintf('%s is set up\n', conf.version);
   clear conf i incl;
-end
+%end
