@@ -14,7 +14,7 @@ if isempty(G_STARTUP)
           'data', 'train', 'test', ...
           'external', 'star-cascade'};
   for i = 1:length(incl)
-    addpath(genpath(incl{i}));
+    addpath(genpath(['voc-release5/' incl{i}]));
   end
   conf = voc_config();
   fprintf('%s is set up\n', conf.version);
