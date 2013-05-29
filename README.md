@@ -1,7 +1,7 @@
-dpm_tracking_urban_safety
-=========================
+<h4><code>dpm_tracking_urban_safety</code></h4>
+<h3>Measuring urban traffic safety by tracking Deformable Parts Models</h3>
 
-Measuring urban traffic safety by tracking Deformable Parts Models
+
 
 Getting started:
 <pre>open a Matlab prompt
