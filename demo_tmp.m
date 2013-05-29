@@ -5,22 +5,22 @@ fprintf('compiling the code...');
 compile_voc_release5;
 fprintf('done.\n\n');
 
-load('VOC2007/car_final');
+load('voc-release5/VOC2007/car_final');
 model.vis = @() visualizemodel(model, ...
                   1:2:length(model.rules{model.start}));
 test('000034.jpg', model, -0.3);
 
-load('INRIA/inriaperson_final');
+load('voc-release5/INRIA/inriaperson_final');
 model.vis = @() visualizemodel(model, ...
                   1:2:length(model.rules{model.start}));
 test('000061.jpg', model, -0.3);
 
-load('VOC2007/person_grammar_final');
+load('voc-release5/VOC2007/person_grammar_final');
 model.class = 'person grammar';
 model.vis = @() visualize_person_grammar_model(model, 6);
 test('000061.jpg', model, -0.6);
 
-load('VOC2007/bicycle_final');
+load('voc-release5/VOC2007/bicycle_final');
 model.vis = @() visualizemodel(model, ...
                   1:2:length(model.rules{model.start}));
 test('000084.jpg', model, -0.3);
