@@ -10,8 +10,6 @@ Getting started:
 look at the output in Dir_2_Lane_3_285_detections
 </pre>
 
-[look at the output...]
-
 Directory structure:
 <pre>voc-release5 -- off-the-shelf Deformable Parts Model (DPM) code by Girshick, R. B. and Felzenszwalb, P. F. and McAllester, D.
 sensys_models -- car model trained on Sensys urban traffic dataset
