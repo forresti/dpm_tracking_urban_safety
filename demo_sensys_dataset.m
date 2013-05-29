@@ -1,3 +1,11 @@
+%Output data structure -- detectionDetails:
+%           img_name
+%           img_id
+%           bbox
+%           bbox_hog_descriptor
+%           dpm_hog_descriptor
+%           dpm_orientation_id
+
 % @return detection info, indexed as detectionDetails(img, detectionID)
 function detectionDetails = demo_sensys_dataset()
     load('sensys_models/car_final.mat');
@@ -19,10 +27,8 @@ function detectionDetails = demo_sensys_dataset()
         [dets, boxes, trees, root_filters] = imgdetect_forTracking(im, model, model.thresh);
 
         nms_thresh = 0.3; %for neighboring detections, this is the max allowed bounding box percent overlap (for non-maximal suppression)
-        outputDir_nms_thresh = [outputDir '_nms_' num2str(nms_thresh)];
-        unix(['mkdir -p ' outputDir_nms_thresh]); %create directory if it doesn't already exist
-        outImgName =  [outputDir_nms_thresh '/' img.name];
-        outCsvName = [outputDir_nms_thresh '/' name '.csv'];
+        outImgName =  [outputDir '/' img.name];
+        outCsvName = [outputDir '/' name '.csv'];
 
         current_detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_filters, im, img_id, img.name, outImgName, outCsvName, model); 
         detectionDetails = [detectionDetails current_detectionDetails] 
@@ -30,14 +36,6 @@ function detectionDetails = demo_sensys_dataset()
         img_id = img_id + 1;
     end
 end
-
-%Output data structure -- detectionDetails:
-%           img_name
-%           img_id
-%           bbox
-%           bbox_hog_descriptor
-%           dpm_hog_descriptor
-%           dpm_orientation_id
 
 % @return detectionDetails struct for all detections in the current image
 % write to file: bounding boxes in CSV format and images with bboxes displayed
@@ -57,7 +55,7 @@ function detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_fi
         end
 
         csvwrite(outCsvName, rootBoxes);
-        showboxes(im, rootBoxes); %doesn't need for the image to already be displayed.
+        showboxes_forTracking(im, rootBoxes); %doesn't need for the image to already be displayed.
         print(gcf, '-djpeg90', '-r0', outImgName);
     %catch %no detections above nms threshold
     %    display('no detections')
