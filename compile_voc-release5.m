@@ -1,4 +1,4 @@
-cd voc-release4.01
+cd voc-release5
 compile
 cd ..
 
