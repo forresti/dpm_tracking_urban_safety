@@ -2,7 +2,7 @@ function demo()
 startup;
 
 fprintf('compiling the code...');
-compile;
+compile_voc-release5;
 fprintf('done.\n\n');
 
 load('VOC2007/car_final');
