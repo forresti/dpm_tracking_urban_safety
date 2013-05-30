@@ -10,12 +10,12 @@ function test(imname, model, thresh)
 
 %run car detector on one image 
     im = imread(imname); % load image
-    [ds, bs, trees, detected_root_filters] = imgdetect_forTracking(im, model, thresh); % detect objects
-    top = nms(ds, 0.3)
-    bs = reduceboxes(model, bs(top,:));
+    [dets, boxes, trees, detected_root_filters] = imgdetect_forTracking(im, model, thresh); % detect objects
+    top = nms(dets, 0.3)
+    boxes = reduceboxes(model, boxes(top,:));
     figure(1000); %img with bboxes is figure num 1000. (so that HOG figure indexing can start from 1)
-    showboxes(im, bs(:,1:4));
-    components_used = ds(:, 5); %component (orientation and associated sub-model) ID
+    showboxes(im, boxes(:,1:4));
+    components_used = dets(:, 5); %component (orientation and associated sub-model) ID
 
 %visualize HOG filters extracted at the detection locations
     figID = 1;
@@ -33,21 +33,5 @@ function test(imname, model, thresh)
 
         figID = figID+1;
     end
-end
-
-%visualize root filter for a specific component
-function vis_root_filter(componentIdx, model)
-    rhs = model.rules{model.start}(componentIdx).rhs;
-    layer = 1;
-    rootIdx = -1;
-    % assume the root filter is first on the rhs of the start rules
-    if model.symbols(rhs(1)).type == 'T' % handle case where there's no deformation model for the root
-      rootIdx = model.symbols(rhs(1)).filter;
-    else % handle case where there is a deformation model for the root
-      rootIdx = model.symbols(model.rules{rhs(1)}(layer).rhs).filter;
-    end
-
-    w = foldHOG(model_get_block(model, model.filters(rootIdx)));
-    visualizeHOG(max(0, w))
 end
 
