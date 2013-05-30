@@ -25,10 +25,10 @@ function detectionDetails = demo_sensys_dataset()
 
         im = imread(inImgName);
         %note: can tune model.thresh to vary precision/recall tradeoff
-        [dets, boxes, trees, root_filters] = imgdetect_forTracking(im, model, model.thresh);
+        [dets, boxes, trees, detected_root_filters] = imgdetect_forTracking(im, model, model.thresh);
         outImgName =  [outputDir '/' img.name];
 
-        current_detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_filters, im, img_id, img.name, outImgName, model); 
+        current_detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, detected_root_filters, im, img_id, img.name, outImgName, model); 
         detectionDetails = [detectionDetails current_detectionDetails] 
         save('detectionDetails.mat', 'detectionDetails');
         img_id = img_id + 1;
@@ -37,19 +37,19 @@ end
 
 % @return detectionDetails struct for all detections in the current image
 % write to file: bounding boxes in CSV format and images with bboxes displayed
-function detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_filters, im, img_id, img_name, outImgName, model)
+function detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, detected_root_filters, im, img_id, img_name, outImgName, model)
     detectionDetails = [];
     try % do nonmax suppression and display detected objects
         top = nms(dets, nms_thresh); %nonmax suppression (precision vs recall tradeoff)
         theBoxes = reduceboxes(model, boxes);
         rootBoxes = int32(theBoxes(:, 1:4)); %bounding box for whole objects -- ignore part filters. (1:4 is x1 y1 x2 y2 for root box)
         [rootBoxes, top] = remove_contained_bboxes(rootBoxes, top);
-        root_filters = root_filters(top);
+        detected_root_filters = detected_root_filters(top);
         components_used = dets(top, 5); %component (orientation and associated sub-model) ID
  
         for i=1:length(rootBoxes(:,1))
-            dpm_hog_descriptor = get_model_root_filter(components_used(i), model);
-            detectionDetails = [detectionDetails struct('img_name', img_name, 'img_id', img_id, 'bbox', rootBoxes(i,:), 'bbox_hog_descriptor', root_filters(i).f, 'dpm_hog_descriptor', dpm_hog_descriptor, 'dpm_orientation_id', components_used(i))];
+            model_root_filter = get_model_root_filter(components_used(i), model);
+            detectionDetails = [detectionDetails struct('img_name', img_name, 'img_id', img_id, 'bbox', rootBoxes(i,:), 'bbox_hog_descriptor', detected_root_filters(i).f, 'dpm_hog_descriptor', model_root_filter, 'dpm_orientation_id', components_used(i))];
         end
 
         showboxes_forTracking(im, rootBoxes); %doesn't need for the image to already be displayed.
