@@ -13,10 +13,11 @@ if isempty(G_STARTUP)
           'model', 'features', 'vis', ...
           'data', 'train', 'test', ...
           'external', 'star-cascade'};
-  addpath(['voc-release5'])
   for i = 1:length(incl)
     addpath(genpath(['voc-release5/' incl{i}]));
   end
+  addpath('voc-release5')
+  addpath('auxiliary_forTracking')
   conf = voc_config();
   fprintf('%s is set up\n', conf.version);
   clear conf i incl;

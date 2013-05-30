@@ -50,7 +50,7 @@ function detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_fi
         components_used = dets(top, 5); %component (orientation and associated sub-model) ID
  
         for i=1:length(rootBoxes(:,1))
-            dpm_hog_descriptor = model_get_root_filter(components_used(i), model);
+            dpm_hog_descriptor = get_model_root_filter(components_used(i), model);
             detectionDetails = [detectionDetails struct('img_name', img_name, 'img_id', img_id, 'bbox', rootBoxes(i,:), 'bbox_hog_descriptor', root_filters(i).f, 'dpm_hog_descriptor', dpm_hog_descriptor, 'dpm_orientation_id', components_used(i))];
         end
 
@@ -62,21 +62,6 @@ function detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_fi
         image(im);
         print(gcf, '-djpeg90', '-r0', outImgName);
     end
-end
-
-%get HOG descriptor for a specific DPM model component
-%   modified from visualizemodel.m
-function filter = model_get_root_filter(componentIdx, model)
-    rhs = model.rules{model.start}(componentIdx).rhs;
-    layer = 1;
-    rootIdx = -1;
-    % assume the root filter is first on the rhs of the start rules
-    if model.symbols(rhs(1)).type == 'T' % handle case where there's no deformation model for the root
-      rootIdx = model.symbols(rhs(1)).filter;
-    else % handle case where there is a deformation model for the root
-      rootIdx = model.symbols(model.rules{rhs(1)}(layer).rhs).filter;
-    end
-    filter = model_get_block(model, model.filters(rootIdx));
 end
 
 %when a larger bounding box fully contains a smaller box, remove the larger box
