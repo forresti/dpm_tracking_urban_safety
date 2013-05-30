@@ -1,8 +1,7 @@
 function [ds, bs, trees, root_filters] = imgdetect_forTracking(im, model, thresh)
 % Wrapper around gdetect.m that computes detections in an image.
-%   [ds, bs, trees, root_filters] = imgdetect(im, model, thresh)
 %
-% Return values (see gdetect.m)
+% Return values (see voc-release5/gdetect/gdetect.m)
 %
 % Arguments
 %   im        Input image
@@ -18,5 +17,5 @@ from_pos = true;
 dataid = 0; %not sure what this does -Forrest
 
 %note: in the following, bboxes (bs) is unchanged from the bs produced by gdetect
-[bs, count, root_filters] = gdetect_write_forTracking(pyra, model, bs, trees, from_pos, dataid); %get root filter feature extractions
+[bs, count, root_filters] = get_detected_filters(pyra, model, bs, trees, from_pos, dataid); %get root filter feature extractions
 
