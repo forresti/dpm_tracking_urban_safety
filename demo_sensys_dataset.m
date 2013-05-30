@@ -8,6 +8,7 @@
 
 % @return detection info, indexed as detectionDetails(img, detectionID)
 function detectionDetails = demo_sensys_dataset()
+    nms_thresh = 0.3; %for neighboring detections, this is the max allowed bounding box percent overlap (for non-maximal suppression)
     load('sensys_models/car_final.mat');
     inputDir = './Dir_2_Lane_3_285';
     outputDir = [inputDir '_detections'];
@@ -25,12 +26,9 @@ function detectionDetails = demo_sensys_dataset()
         im = imread(inImgName);
         %note: can tune model.thresh to vary precision/recall tradeoff
         [dets, boxes, trees, root_filters] = imgdetect_forTracking(im, model, model.thresh);
-
-        nms_thresh = 0.3; %for neighboring detections, this is the max allowed bounding box percent overlap (for non-maximal suppression)
         outImgName =  [outputDir '/' img.name];
-        outCsvName = [outputDir '/' name '.csv'];
 
-        current_detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_filters, im, img_id, img.name, outImgName, outCsvName, model); 
+        current_detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_filters, im, img_id, img.name, outImgName, model); 
         detectionDetails = [detectionDetails current_detectionDetails] 
         save('detectionDetails.mat', 'detectionDetails');
         img_id = img_id + 1;
@@ -39,7 +37,7 @@ end
 
 % @return detectionDetails struct for all detections in the current image
 % write to file: bounding boxes in CSV format and images with bboxes displayed
-function detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_filters, im, img_id, img_name, outImgName, outCsvName, model)
+function detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_filters, im, img_id, img_name, outImgName, model)
     detectionDetails = [];
     try % do nonmax suppression and display detected objects
         top = nms(dets, nms_thresh); %nonmax suppression (precision vs recall tradeoff)
@@ -54,7 +52,6 @@ function detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_fi
             detectionDetails = [detectionDetails struct('img_name', img_name, 'img_id', img_id, 'bbox', rootBoxes(i,:), 'bbox_hog_descriptor', root_filters(i).f, 'dpm_hog_descriptor', dpm_hog_descriptor, 'dpm_orientation_id', components_used(i))];
         end
 
-        csvwrite(outCsvName, rootBoxes);
         showboxes_forTracking(im, rootBoxes); %doesn't need for the image to already be displayed.
         print(gcf, '-djpeg90', '-r0', outImgName);
     catch %no detections above nms threshold
@@ -63,30 +60,4 @@ function detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_fi
         print(gcf, '-djpeg90', '-r0', outImgName);
     end
 end
-
-%when a larger bounding box fully contains a smaller box, remove the larger box
-%param boxes: [x1 y1 x2 y2; x1 y1 x2 y2; ...] -- input ALL boxes, not just the top ones.
-function [boxes, top] = removeContainedBboxes(boxes, top) %TODO: remove
-    newBoxes = [];
-    newTop = [];
-    for i=top' %only keep box "i" if it doesn't contain an other box
-        containsOtherBoxes = 0;
-        for j=top'
-            if i ~= j
-                x1_i = boxes(i,1); y1_i = boxes(i,2); x2_i = boxes(i,3); y2_i = boxes(i,4);
-                x1_j = boxes(j,1); y1_j = boxes(j,2); x2_j = boxes(j,3); y2_j = boxes(j,4);
-                if(x1_i < x1_j && x2_i > x2_j && y1_i < y1_j && y2_i > y2_j)
-                    containsOtherBoxes = 1; %i contains j, and possibly other boxes too
-                end
-            end
-        end
-        if containsOtherBoxes == 0
-            newBoxes = [newBoxes; boxes(i,1:4)];
-            newTop = [newTop; i];
-        end
-    end
-    boxes = newBoxes;
-    top = newTop;
-end
-
 
