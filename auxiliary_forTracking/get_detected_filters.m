@@ -1,5 +1,4 @@
-function [bs, count, root_filters] = gdetect_write_forTracking(pyra, model, bs, trees, from_pos, ...
-                                     dataid, maxsize, maxnum)
+function [bs, count, root_filters] = gdetect_write_forTracking(pyra, model, bs, trees)
 %
 % Return values
 %   bs
@@ -11,23 +10,13 @@ function [bs, count, root_filters] = gdetect_write_forTracking(pyra, model, bs, 
 %   model       Object model
 %   bs          Detection boxes
 %   trees       Detection derivation trees from gdetect.m
-%   from_pos    True if the boxes come from a foreground example
-%               False if the boxes come from a background example
-%   dataid      Id for use in cache key (from pascal_data.m; see fv_cache.h)
-%   maxsize     Max cache size in bytes
-%   maxnum      Max number of feature vectors to write
 
-if nargin < 7
-  maxsize = inf;
-end
-
-if nargin < 8
-  maxnum = inf;
-end
-
+maxsize = inf;
+maxnum = inf;
+dataid = 0;
 count = 0;
 if ~isempty(bs)
-  [count, root_filters] = writefeatures(pyra, model, trees, from_pos, dataid, maxsize, maxnum);
+  [count, root_filters] = writefeatures(pyra, model, trees,  maxsize, maxnum);
   % truncate boxes
   bs(count+1:end,:) = [];
 end
@@ -35,14 +24,8 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % writes feature vectors for the detections in trees
-function [count, root_filters] = writefeatures(pyra, model, trees, from_pos, ...
-                               dataid, maxsize, maxnum)
-if from_pos
-  is_belief = 1;
-else
-  is_belief = 0;
-end
-
+function [count, root_filters] = writefeatures(pyra, model, trees, maxsize, maxnum)
+dataid = 0; %TODO: remove?
 % location/scale features
 loc_f = loc_feat(model, pyra.num_levels);
 
@@ -118,16 +101,7 @@ for d = 1:min(maxnum, length(trees))
       end
     end
   end
-  %ex.blocks.f  %Forrest
-  %status = exwrite(ex, from_pos, is_belief, maxsize);
   count = count + 1;
-  if from_pos
-    % by convention, only the first feature vector is the belief
-    is_belief = 0;
-  end
-  %if ~status
-  %  break
-  %end
 end
 
 
@@ -162,41 +136,3 @@ else
   ex.blocks(bl).f = ex.blocks(bl).f + f(:);
 end
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% write ex to fv cache
-function status = exwrite(ex, from_pos, is_belief, maxsize)
-% ex  example to write
-
-if from_pos
-  loss = ex.loss;
-  is_mined = 0;
-  ex.key(2) = 0; % remove scale
-  ex.key(3) = 0; % remove x position
-  ex.key(4) = 0; % remove y position
-else
-  loss = 1;
-  is_mined = 1;
-end
-
-feat = [];
-bls = [];
-for i = 1:length(ex.blocks)
-  % skip if empty or the features are all zero
-  if ~isempty(ex.blocks(i).f) && ~all(ex.blocks(i).f == 0)
-    feat = [feat; ex.blocks(i).f];
-    bls = [bls; i-1;];
-  end
-end
-
-if ~from_pos || is_belief
-  % write zero belief vector if this came from neg[]
-  % write zero non-belief vector if this came from pos[]
-  write_zero_fv(from_pos, ex.key);
-end
-
-byte_size = fv_cache('add', int32(ex.key), int32(bls), single(feat), ...
-                            int32(is_belief), int32(is_mined), loss); 
-
-% still under the limit?
-status = (byte_size ~= -1) & (byte_size < maxsize);
