@@ -15,6 +15,7 @@ look in <b>detectionDetails.mat</b> for the HOG features from the detected image
 Directory structure:
 <pre>voc-release5 -- off-the-shelf Deformable Parts Model (DPM) code by Girshick, R. B. and Felzenszwalb, P. F. and McAllester, D.
 sensys_models -- car model trained on Sensys urban traffic dataset
+auxiliary_forTracking -- additional hooks into voc-release5 for tracking 
 </pre>
 
 
