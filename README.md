@@ -3,6 +3,7 @@
 
 
 
+
 Getting started:
 <pre>open a Matlab prompt
 <b>compile_voc_release5</b> #only need to do this the 1st time.
@@ -20,11 +21,14 @@ auxiliary_forTracking -- additional hooks into voc-release5 for tracking
 
 
 Output data structure:
-<pre><b>detectionDetails.mat</b>
-detectionDetails(detectionIdx).bbox %1x4 array: x1, y1, x2, y2
-detectionDetails(detectionIdx).dpm_hog_descriptor %DPM model's root filter used in this detection
-detectionDetails(detectionIdx).bbox_hog_descriptor %HOG features extracted from the detected bounding box
-detectionDetails(detectionIdx).dpm_orientation_id %which DPM component (submodel) was used?
-detectionDetails(detectionIdx).img_id %Each image has a unique int ID number, starting from 1 (in time-series order). 
-detectionDetails(detectionIdx).img_name
-</pre>
+``` matlab 
+detectionDetails.mat
+  detectionDetails(detectionIdx).bbox %1x4 array: x1, y1, x2, y2
+  detectionDetails(detectionIdx).dpm_hog_descriptor %DPM model's root filter used in this detection
+  detectionDetails(detectionIdx).bbox_hog_descriptor %HOG features extracted from the detected bounding box
+  detectionDetails(detectionIdx).dpm_orientation_id %which DPM component (submodel) was used?
+  detectionDetails(detectionIdx).img_id %Each image has a unique int ID number, starting from 1 (in time-series order). 
+  detectionDetails(detectionIdx).img_name
+```
+
+
