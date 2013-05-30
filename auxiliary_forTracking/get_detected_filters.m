@@ -1,8 +1,6 @@
-function [bs, count, root_filters] = gdetect_write_forTracking(pyra, model, bs, trees)
+function root_filters = get_detected_filters(pyra, model, bs, trees)
 %
 % Return values
-%   bs
-%   count
 %   root_filters(num_detections).f -- one root filter per detection
 %
 % Arguments
@@ -13,10 +11,9 @@ function [bs, count, root_filters] = gdetect_write_forTracking(pyra, model, bs, 
 
 maxsize = inf;
 maxnum = inf;
-dataid = 0;
 count = 0;
 if ~isempty(bs)
-  [count, root_filters] = writefeatures(pyra, model, trees,  maxsize, maxnum);
+  [count, root_filters] = writefeatures(pyra, model, trees, maxsize, maxnum);
   % truncate boxes
   bs(count+1:end,:) = [];
 end
@@ -25,7 +22,6 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % writes feature vectors for the detections in trees
 function [count, root_filters] = writefeatures(pyra, model, trees, maxsize, maxnum)
-dataid = 0; %TODO: remove?
 % location/scale features
 loc_f = loc_feat(model, pyra.num_levels);
 
@@ -43,7 +39,7 @@ count = 0;
 for d = 1:min(maxnum, length(trees))
   t = tree_mat_to_struct(trees{d});
   ex = [];
-  ex.key = [dataid; t(1).l; t(1).x; t(1).y];
+  %ex.key = [dataid; t(1).l; t(1).x; t(1).y];
   ex.blocks(model.numblocks).f = [];
   ex.loss = t(1).loss;
 

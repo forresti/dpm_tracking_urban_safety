@@ -13,9 +13,6 @@ im = color(im);
 pyra = featpyramid(im, model);
 [ds, bs, trees] = gdetect(pyra, model, thresh);
 
-%from_pos = true;
-%dataid = 0; %not sure what this does -Forrest
-
 %note: in the following, bboxes (bs) is unchanged from the bs produced by gdetect
-[bs, count, root_filters] = get_detected_filters(pyra, model, bs, trees); %get root filter feature extractions
+root_filters = get_detected_filters(pyra, model, bs, trees); %get root filter feature extractions
 
