@@ -45,7 +45,7 @@ function detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, root_fi
         top = nms(dets, nms_thresh); %nonmax suppression (precision vs recall tradeoff)
         theBoxes = reduceboxes(model, boxes);
         rootBoxes = int32(theBoxes(:, 1:4)); %bounding box for whole objects -- ignore part filters. (1:4 is x1 y1 x2 y2 for root box)
-        [rootBoxes, top] = removeContainedBboxes(rootBoxes, top);
+        [rootBoxes, top] = remove_contained_bboxes(rootBoxes, top);
         root_filters = root_filters(top);
         components_used = dets(top, 5); %component (orientation and associated sub-model) ID
  
@@ -66,7 +66,7 @@ end
 
 %when a larger bounding box fully contains a smaller box, remove the larger box
 %param boxes: [x1 y1 x2 y2; x1 y1 x2 y2; ...] -- input ALL boxes, not just the top ones.
-function [boxes, top] = removeContainedBboxes(boxes, top)
+function [boxes, top] = removeContainedBboxes(boxes, top) %TODO: remove
     newBoxes = [];
     newTop = [];
     for i=top' %only keep box "i" if it doesn't contain an other box
