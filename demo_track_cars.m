@@ -21,8 +21,13 @@ function matches = track_cars(detectionDetails)
         for bboxIdx1 = currImgIndices %indexing into detectionDetails
             for bboxIdx2 = nextImgIndices
 
-                bboxIdx1
-                bboxIdx2
+                class(detectionDetails(bboxIdx2).bbox_hog_descriptor)
+
+                %correlation = conv2( detectionDetails(bboxIdx1).bbox_hog_descriptor, ...
+                %                     detectionDetails(bboxIdx2).bbox_hog_descriptor );
+                                     %flipud(fliplr(detectionDetails(bboxIdx2).bbox_hog_descriptor)) );
+                %bboxIdx1
+                %bboxIdx2
 
             end
         end 
