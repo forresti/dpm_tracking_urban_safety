@@ -13,6 +13,10 @@ function matches = track_cars(detectionDetails)
     matches = detectionDetails; %the output 'matches' structure contains all of the detectionDetails info, PLUS correspondences between car bboxes
 
     for img_id = 1:(nImages-1)
+        currImgIndices = find(cell2mat({detectionDetails.img_id}) == img_id)
+        nextImgIndices = find(cell2mat({detectionDetails.img_id}) == (img_id+1))
+
+        %matchScores = zeros(...
         img_id
     end 
 
