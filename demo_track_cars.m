@@ -16,7 +16,7 @@ function matches = track_cars(detectionDetails)
         currImgIndices = find(cell2mat({detectionDetails.img_id}) == img_id)
         nextImgIndices = find(cell2mat({detectionDetails.img_id}) == (img_id+1))
 
-        %matchScores = zeros(...
+        matchScores = zeros([length(currImgIndices) length(nextImgIndices)])
         img_id
     end 
 
