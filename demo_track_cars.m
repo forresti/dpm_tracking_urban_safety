@@ -28,10 +28,17 @@ function matches = track_cars(detectionDetails)
                                                % flip(filter2) happens inside corr2_withDepth()
 
                 %TODO: decide how to index matchScores. Do I want to index by bbox_id within the image, or global bbox_id?
-                %matchScores(...) = max(correlation);
+
+                local_bbox_id1 = detectionDetails(bboxIdx1).bbox_id %per-image bbox ID instead of global bbox ID
+                local_bbox_id2 = detectionDetails(bboxIdx2).bbox_id
+                matchScores(local_bbox_id1, local_bbox_id2) = max(max(correlation));
             end
         end 
         img_id
+        matchScores
+        %TODO: 
+        %matches(1st image in img1) = max(matchScores(1,:)) %need to do work out global vs local bbox IDs.
+        %matches(2nd image in img2) = max(matchScores(2,:))
     end 
 end
 
@@ -49,8 +56,6 @@ function convolved = corr2_withDepth(filter1, filter2)
         convs(:,:,depth) = conv2( filter1(:,:,depth), fliplr(flipud(filter2(:,:,depth))) );
     end
     %TODO: explore statistics of numbers in here. (none of the inputs in filter1,filter2 are less than 0, for example) 
-
-    keyboard
 
     convolved = sum(convs,3);
 end
