@@ -16,7 +16,17 @@ function matches = track_cars(detectionDetails)
         currImgIndices = find(cell2mat({detectionDetails.img_id}) == img_id)
         nextImgIndices = find(cell2mat({detectionDetails.img_id}) == (img_id+1))
 
-        matchScores = zeros([length(currImgIndices) length(nextImgIndices)])
+        matchScores = zeros([length(currImgIndices) length(nextImgIndices)]); %will contain max sliding-window match for each pair of filters in img_id and (img_id+1).
+
+        for bboxIdx1 = currImgIndices %indexing into detectionDetails
+            for bboxIdx2 = nextImgIndices
+
+                bboxIdx1
+                bboxIdx2
+
+            end
+        end 
+
         img_id
     end 
 
