@@ -19,24 +19,20 @@ function matches = track_cars(detectionDetails)
         matchScores = zeros([length(currImgIndices) length(nextImgIndices)]); %will contain max sliding-window match for each pair of filters in img_id and (img_id+1).
 
         for bboxIdx1 = currImgIndices %indexing into detectionDetails
-            for bboxIdx2 = nextImgIndices
+            for bboxIdx2 = nextImgIndices %Should I actually index this as per-image bbox_id instead of global bbox_id?
 
                 %size(detectionDetails(bboxIdx2).bbox_hog_descriptor)
 
-                %correlation = conv2( double(detectionDetails(bboxIdx1).bbox_hog_descriptor), ...
-                %                     double(detectionDetails(bboxIdx2).bbox_hog_descriptor) );
-                                     %flipud(fliplr(detectionDetails(bboxIdx2).bbox_hog_descriptor)) );
-
                 correlation = corr2_withDepth( detectionDetails(bboxIdx1).bbox_hog_descriptor, ...
-                                               detectionDetails(bboxIdx2).bbox_hog_descriptor )
-                                               %flipud(fliplr(detectionDetails(bboxIdx2).bbox_hog_descriptor)) );
+                                               detectionDetails(bboxIdx2).bbox_hog_descriptor ); 
+                                               % flip(filter2) happens inside corr2_withDepth()
+
+                %TODO: decide how to index matchScores. Do I want to index by bbox_id within the image, or global bbox_id?
+                %matchScores(...) = max(correlation);
             end
         end 
-
         img_id
     end 
-
-    
 end
 
 % @param filter1, filter2 = X*Y*depth filters, where depth is equal for both filters.
