@@ -47,9 +47,9 @@ function detectionDetails = postprocess_and_vis(nms_thresh, dets, boxes, detecte
         detected_root_filters = detected_root_filters(top);
         components_used = dets(top, 5); %component (orientation and associated sub-model) ID
  
-        for i=1:length(rootBoxes(:,1))
-            model_root_filter = get_model_root_filter(components_used(i), model);
-            detectionDetails = [detectionDetails struct('img_name', img_name, 'img_id', img_id, 'bbox', rootBoxes(i,:), 'bbox_hog_descriptor', detected_root_filters(i).f, 'dpm_hog_descriptor', model_root_filter, 'dpm_orientation_id', components_used(i))];
+        for bbox_id=1:length(rootBoxes(:,1))
+            model_root_filter = get_model_root_filter(components_used(bbox_id), model);
+            detectionDetails = [detectionDetails struct('img_name', img_name, 'img_id', img_id, 'bbox', rootBoxes(bbox_id,:), 'bbox_hog_descriptor', detected_root_filters(bbox_id).f, 'dpm_hog_descriptor', model_root_filter, 'dpm_orientation_id', components_used(bbox_id))];
         end
 
         showboxes_forTracking(im, rootBoxes); %doesn't need for the image to already be displayed.
