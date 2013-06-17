@@ -23,12 +23,13 @@ function matches = track_cars(detectionDetails)
 
                 %size(detectionDetails(bboxIdx2).bbox_hog_descriptor)
 
-                correlation = conv2( double(detectionDetails(bboxIdx1).bbox_hog_descriptor), ...
-                                     double(detectionDetails(bboxIdx2).bbox_hog_descriptor) );
+                %correlation = conv2( double(detectionDetails(bboxIdx1).bbox_hog_descriptor), ...
+                %                     double(detectionDetails(bboxIdx2).bbox_hog_descriptor) );
                                      %flipud(fliplr(detectionDetails(bboxIdx2).bbox_hog_descriptor)) );
-                %bboxIdx1
-                %bboxIdx2
 
+                correlation = conv2_withDepth( detectionDetails(bboxIdx1).bbox_hog_descriptor, ...
+                                               detectionDetails(bboxIdx2).bbox_hog_descriptor );
+                                               %flipud(fliplr(detectionDetails(bboxIdx2).bbox_hog_descriptor)) );
             end
         end 
 
@@ -38,8 +39,19 @@ function matches = track_cars(detectionDetails)
     
 end
 
-%function convolved = conv2_withDepth(filter1, filter2)
-%    [height1 width1 depth1]
-%end
+function convolved = conv2_withDepth(filter1, filter2)
+    [height1 width1 depth1] = size(filter1);
+    [height2 width2 depth2] = size(filter2);
+    
+    assert(depth1 == depth2, 'conv2_withDepth requires filters with equal depths');
+
+    convs = []; %TODO: preallocate
+    for depth=1:depth1
+        convs(:,:,depth) = conv2(filter1(:,:,depth), filter2(:,:,depth));
+    end
+    %TODO: explore statistics of numbers in here. (none of the inputs in filter1,filter2 are less than 0, for example) 
+
+    convolved = sum(convs,3);
+end
 
 
